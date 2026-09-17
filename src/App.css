@@ -24,6 +24,10 @@
 }
 
 .students-heading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
   margin-bottom: 28px;
 }
 
@@ -37,6 +41,128 @@
 
 .students-heading > p:last-child {
   color: var(--text);
+}
+
+.add-student-button,
+.cancel-button,
+.close-form-button {
+  border: 0;
+  cursor: pointer;
+}
+
+.add-student-button {
+  flex: 0 0 auto;
+  background: var(--accent);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 12px 16px;
+}
+
+.add-student-button:hover,
+.submit-button:hover:not(:disabled) {
+  background: #b9472f;
+}
+
+.student-form-panel {
+  margin-bottom: 24px;
+  padding: 24px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  box-shadow: var(--shadow);
+}
+
+.form-panel-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.form-panel-heading h2 {
+  margin-top: 8px;
+}
+
+.close-form-button {
+  background: transparent;
+  color: var(--text);
+  font-size: 26px;
+  line-height: 1;
+  padding: 0 4px;
+}
+
+.student-form {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.student-form label {
+  display: grid;
+  gap: 7px;
+  color: var(--text-h);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.student-form label span {
+  color: var(--text);
+  font-size: 11px;
+  font-weight: 400;
+}
+
+.student-form input,
+.student-form textarea {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid var(--border);
+  border-radius: 0;
+  background: #fbfaf6;
+  color: var(--text-h);
+  font-size: 14px;
+  padding: 10px 12px;
+  outline: none;
+  resize: vertical;
+}
+
+.student-form input:focus,
+.student-form textarea:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-bg);
+}
+
+.wide-field {
+  grid-column: span 2;
+}
+
+.form-actions {
+  display: flex;
+  align-items: end;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.cancel-button {
+  background: var(--social-bg);
+  color: var(--text-h);
+  font-size: 13px;
+  font-weight: 700;
+  padding: 11px 16px;
+}
+
+.student-status {
+  margin: 0 0 16px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.student-status.success { color: #28734b; }
+.student-status.error { color: #b9472f; }
+
+.table-message {
+  padding: 32px 16px;
+  color: var(--text);
+  text-align: center;
 }
 
 .students-toolbar {
@@ -159,6 +285,37 @@
 
   .students-heading h1 {
     font-size: 36px;
+  }
+
+  .students-heading {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .add-student-button {
+    width: 100%;
+  }
+
+  .student-form-panel {
+    padding: 18px;
+  }
+
+  .student-form {
+    grid-template-columns: 1fr;
+  }
+
+  .wide-field {
+    grid-column: auto;
+  }
+
+  .form-actions {
+    align-items: stretch;
+    flex-direction: column-reverse;
+  }
+
+  .form-actions button {
+    width: 100%;
   }
 
   .students-toolbar {

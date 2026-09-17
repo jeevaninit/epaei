@@ -1,0 +1,167 @@
+{
+  "students": [
+    {
+      "id": 1,
+      "date": "2024-06-01",
+      "name": "John Doe",
+      "courses": [
+        "Math",
+        "Science"
+      ],
+      "qualifications": [
+        "BSc",
+        "MSc"
+      ],
+      "phone": "123-456-7890",
+      "remarks": "Excellent student"
+    },
+    {
+      "id": 2,
+      "date": "2024-06-02",
+      "name": "Jane Smith",
+      "courses": [
+        "English",
+        "History"
+      ],
+      "qualifications": [
+        "BA",
+        "MA"
+      ],
+      "phone": "987-654-3210",
+      "remarks": "Very attentive"
+    },
+    {
+      "id": 3,
+      "date": "2024-06-03",
+      "name": "Alice Johnson",
+      "courses": [
+        "Art",
+        "Music"
+      ],
+      "qualifications": [
+        "BFA",
+        "MFA"
+      ],
+      "phone": "555-123-4567",
+      "remarks": "Creative and talented"
+    },
+    {
+      "id": 4,
+      "date": "2024-06-04",
+      "name": "Bob Brown",
+      "courses": [
+        "Physics",
+        "Chemistry"
+      ],
+      "qualifications": [
+        "BSc",
+        "MSc"
+      ],
+      "phone": "444-555-6666",
+      "remarks": "Strong analytical skills"
+    },
+    {
+      "id": 5,
+      "date": "2024-06-05",
+      "name": "Charlie Davis",
+      "courses": [
+        "Biology",
+        "Geography"
+      ],
+      "qualifications": [
+        "BSc",
+        "MSc"
+      ],
+      "phone": "333-222-1111",
+      "remarks": "Excellent research skills"
+    },
+    {
+      "id": 6,
+      "date": "2024-06-06",
+      "name": "Diana Evans",
+      "courses": [
+        "Philosophy",
+        "Sociology"
+      ],
+      "qualifications": [
+        "BA",
+        "MA"
+      ],
+      "phone": "777-888-9999",
+      "remarks": "Great critical thinking"
+    },
+    {
+      "id": 7,
+      "date": "2024-06-07",
+      "name": "Ethan Foster",
+      "courses": [
+        "Economics",
+        "Political Science"
+      ],
+      "qualifications": [
+        "BA",
+        "MA"
+      ],
+      "phone": "111-222-3333",
+      "remarks": "Strong leadership skills"
+    },
+    {
+      "id": 8,
+      "date": "2024-06-08",
+      "name": "Fiona Green",
+      "courses": [
+        "Computer Science",
+        "Mathematics"
+      ],
+      "qualifications": [
+        "BSc",
+        "MSc"
+      ],
+      "phone": "888-777-6666",
+      "remarks": "Excellent problem-solving skills"
+    },
+    {
+      "id": 9,
+      "date": "2024-06-09",
+      "name": "George Harris",
+      "courses": [
+        "Psychology",
+        "Education"
+      ],
+      "qualifications": [
+        "BA",
+        "MA"
+      ],
+      "phone": "222-333-4444",
+      "remarks": "Great communication skills"
+    },
+    {
+      "id": 10,
+      "date": "2024-06-10",
+      "name": "Hannah Jackson",
+      "courses": [
+        "Business Administration",
+        "Marketing"
+      ],
+      "qualifications": [
+        "BBA",
+        "MBA"
+      ],
+      "phone": "999-888-7777",
+      "remarks": "Strong business acumen"
+    },
+    {
+      "id": 1789650236131,
+      "date": "2026-09-17",
+      "name": "JEEVAN KONDURU",
+      "courses": [
+        "maths"
+      ],
+      "qualifications": [
+        "BED"
+      ],
+      "phone": "7842788383",
+      "remarks": "good"
+    }
+  ]
+}
