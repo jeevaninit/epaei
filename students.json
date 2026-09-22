@@ -162,6 +162,19 @@
       ],
       "phone": "7842788383",
       "remarks": "good"
+    },
+    {
+      "id": 1789704288105,
+      "date": "2026-09-18",
+      "name": "Ravi",
+      "courses": [
+        "CorelDraw"
+      ],
+      "qualifications": [
+        "MA"
+      ],
+      "phone": "9843984398",
+      "remarks": "His trying to Join the CorelDraw course-20-09-26"
     }
   ]
 }
