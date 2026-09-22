@@ -1,5 +1,7 @@
 import React from 'react'
 
+const PAGE_SIZE = 8
+
 const emptyForm = {
   name: '',
   date: '',
@@ -23,6 +25,7 @@ const StudentsDetails = () => {
   const [status, setStatus] = React.useState({ type: '', message: '' })
   const [isLoading, setIsLoading] = React.useState(true)
   const [isSaving, setIsSaving] = React.useState(false)
+  const [currentPage, setCurrentPage] = React.useState(1)
 
   const loadStudents = async () => {
     try {
@@ -83,6 +86,8 @@ const StudentsDetails = () => {
         || searchablePhone.includes(normalizedPhoneSearch)
     })
     .sort((firstStudent, secondStudent) => new Date(secondStudent.date) - new Date(firstStudent.date))
+  const totalPages = Math.ceil(filteredStudents.length / PAGE_SIZE)
+  const visibleStudents = filteredStudents.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE)
 
   return (
     <main className="students-page">
@@ -125,7 +130,7 @@ const StudentsDetails = () => {
 
       <div className="students-toolbar">
         <label htmlFor="student-search">Search students</label>
-        <input id="student-search" type="search" value={searchTerm} onChange={(event) => setSearchTerm(event.target.value)} placeholder="Search by name, date, or phone number" />
+        <input id="student-search" type="search" value={searchTerm} onChange={(event) => { setSearchTerm(event.target.value); setCurrentPage(1) }} placeholder="Search by name, date, or phone number" />
         {searchTerm && <span>{filteredStudents.length} result{filteredStudents.length === 1 ? '' : 's'}</span>}
       </div>
 
@@ -134,7 +139,7 @@ const StudentsDetails = () => {
           <table className="students-table">
             <thead><tr><th scope="col">Name</th><th scope="col">Date</th><th scope="col">Courses</th><th scope="col">Qualifications</th><th scope="col">Phone</th><th scope="col">Remarks</th></tr></thead>
             <tbody>
-              {filteredStudents.map((student) => (
+              {visibleStudents.map((student) => (
                 <tr key={student.id}>
                   <td data-label="Name">{student.name}</td>
                   <td data-label="Date">{formatDate(student.date)}</td>
@@ -149,6 +154,14 @@ const StudentsDetails = () => {
           </table>
         )}
       </div>
+
+      {totalPages > 1 && (
+        <nav className="students-pagination" aria-label="Student records pages">
+          <button type="button" onClick={() => setCurrentPage((page) => page - 1)} disabled={currentPage === 1}>Previous</button>
+          <span aria-live="polite">Page {currentPage} of {totalPages}</span>
+          <button type="button" onClick={() => setCurrentPage((page) => page + 1)} disabled={currentPage === totalPages}>Next</button>
+        </nav>
+      )}
     </main>
   )
 }
