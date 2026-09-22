@@ -225,12 +225,13 @@
   overflow-wrap: anywhere;
 }
 
-.students-table th:nth-child(1) { width: 16%; }
-.students-table th:nth-child(2) { width: 13%; }
-.students-table th:nth-child(3) { width: 18%; }
-.students-table th:nth-child(4) { width: 19%; }
-.students-table th:nth-child(5) { width: 15%; }
-.students-table th:nth-child(6) { width: 19%; }
+.students-table th:nth-child(1) { width: 14%; }
+.students-table th:nth-child(2) { width: 11%; }
+.students-table th:nth-child(3) { width: 16%; }
+.students-table th:nth-child(4) { width: 17%; }
+.students-table th:nth-child(5) { width: 13%; }
+.students-table th:nth-child(6) { width: 17%; }
+.students-table th:nth-child(7) { width: 12%; }
 
 .students-table th {
   color: var(--text-h);
@@ -268,6 +269,27 @@
   color: var(--text);
   padding: 28px 16px;
   text-align: center;
+}
+
+.student-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.student-actions button {
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text-h);
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 6px 8px;
+}
+
+.student-actions button:hover {
+  border-color: var(--accent);
+  color: var(--accent);
 }
 
 .students-pagination {
@@ -417,6 +439,10 @@
   .students-table td:first-child::before {
     display: block;
     margin-bottom: 4px;
+  }
+
+  .student-actions {
+    display: flex;
   }
 
   .students-table td:last-child {

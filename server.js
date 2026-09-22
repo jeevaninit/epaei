@@ -65,6 +65,48 @@ const server = createServer(async (request, response) => {
     return
   }
 
+  const studentUrlMatch = request.url.match(/^\/api\/students\/(\d+)$/)
+  if (studentUrlMatch && ['PUT', 'DELETE'].includes(request.method)) {
+    try {
+      const studentId = Number(studentUrlMatch[1])
+      const students = await readStudents()
+      const studentIndex = students.findIndex((student) => student.id === studentId)
+
+      if (studentIndex === -1) {
+        sendJson(response, 404, { message: 'Student record could not be found.' })
+        return
+      }
+
+      if (request.method === 'DELETE') {
+        await saveStudents(students.filter((student) => student.id !== studentId))
+        sendJson(response, 200, { message: 'Student deleted successfully.' })
+        return
+      }
+
+      const body = await readBody(request)
+      const name = String(body.name || '').trim()
+      const date = String(body.date || '').trim()
+      const phone = String(body.phone || '').trim()
+      const remarks = String(body.remarks || '').trim()
+      const courses = String(body.courses || '').split(',').map((course) => course.trim()).filter(Boolean)
+      const qualifications = String(body.qualifications || '').split(',').map((qualification) => qualification.trim()).filter(Boolean)
+
+      if (!name || !date || !phone || courses.length === 0 || qualifications.length === 0) {
+        sendJson(response, 400, { message: 'Name, date, phone, courses, and qualifications are required.' })
+        return
+      }
+
+      const student = { id: studentId, date, name, courses, qualifications, phone, remarks }
+      students[studentIndex] = student
+      await saveStudents(students)
+      sendJson(response, 200, { student })
+    } catch (error) {
+      console.error(error)
+      sendJson(response, 500, { message: 'Student record could not be updated.' })
+    }
+    return
+  }
+
   if (request.method === 'POST' && request.url === '/api/students') {
     try {
       const body = await readBody(request)

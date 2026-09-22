@@ -21,6 +21,7 @@ const StudentsDetails = () => {
   const [students, setStudents] = React.useState([])
   const [searchTerm, setSearchTerm] = React.useState('')
   const [isFormOpen, setIsFormOpen] = React.useState(false)
+  const [editingStudentId, setEditingStudentId] = React.useState(null)
   const [form, setForm] = React.useState(emptyForm)
   const [status, setStatus] = React.useState({ type: '', message: '' })
   const [isLoading, setIsLoading] = React.useState(true)
@@ -55,22 +56,48 @@ const StudentsDetails = () => {
     setIsSaving(true)
 
     try {
-      const response = await fetch('/api/students', {
-        method: 'POST',
+      const endpoint = editingStudentId === null ? '/api/students' : `/api/students/${editingStudentId}`
+      const response = await fetch(endpoint, {
+        method: editingStudentId === null ? 'POST' : 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(form),
       })
       const result = await response.json()
       if (!response.ok) throw new Error(result.message || 'Student record could not be saved.')
 
-      setStudents((currentStudents) => [...currentStudents, result.student])
+      setStudents((currentStudents) => editingStudentId === null
+        ? [...currentStudents, result.student]
+        : currentStudents.map((student) => student.id === result.student.id ? result.student : student))
       setForm(emptyForm)
       setIsFormOpen(false)
-      setStatus({ type: 'success', message: 'Student added successfully.' })
+      setEditingStudentId(null)
+      setStatus({ type: 'success', message: editingStudentId === null ? 'Student added successfully.' : 'Student updated successfully.' })
     } catch (error) {
       setStatus({ type: 'error', message: error.message })
     } finally {
       setIsSaving(false)
+    }
+  }
+
+  const handleEdit = (student) => {
+    setEditingStudentId(student.id)
+    setForm({ ...student, courses: student.courses.join(', '), qualifications: student.qualifications.join(', ') })
+    setIsFormOpen(true)
+    setStatus({ type: '', message: '' })
+  }
+
+  const handleDelete = async (student) => {
+    if (!window.confirm(`Delete the record for ${student.name}?`)) return
+
+    setStatus({ type: '', message: '' })
+    try {
+      const response = await fetch(`/api/students/${student.id}`, { method: 'DELETE' })
+      const result = await response.json()
+      if (!response.ok) throw new Error(result.message || 'Student record could not be deleted.')
+      setStudents((currentStudents) => currentStudents.filter((currentStudent) => currentStudent.id !== student.id))
+      setStatus({ type: 'success', message: 'Student deleted successfully.' })
+    } catch (error) {
+      setStatus({ type: 'error', message: error.message })
     }
   }
 
@@ -89,6 +116,11 @@ const StudentsDetails = () => {
   const totalPages = Math.ceil(filteredStudents.length / PAGE_SIZE)
   const visibleStudents = filteredStudents.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE)
 
+  React.useEffect(() => {
+    const lastPage = Math.max(1, Math.ceil(filteredStudents.length / PAGE_SIZE))
+    if (currentPage > lastPage) setCurrentPage(lastPage)
+  }, [currentPage, filteredStudents.length])
+
   return (
     <main className="students-page">
       <div className="students-heading">
@@ -97,17 +129,17 @@ const StudentsDetails = () => {
           <h1>Students Details</h1>
           <p>Review student records, courses, qualifications, and notes.</p>
         </div>
-        <button className="add-student-button" type="button" onClick={() => { setIsFormOpen(true); setStatus({ type: '', message: '' }) }}>
+        <button className="add-student-button" type="button" onClick={() => { setEditingStudentId(null); setForm(emptyForm); setIsFormOpen(true); setStatus({ type: '', message: '' }) }}>
           + Add new student
         </button>
       </div>
 
       {isFormOpen && (
-        <section className="student-form-panel" aria-labelledby="add-student-title">
+        <section className="student-form-panel" aria-labelledby="student-form-title">
           <div className="form-panel-heading">
             <div>
-              <p className="eyebrow">New record</p>
-              <h2 id="add-student-title">Add student details</h2>
+              <p className="eyebrow">{editingStudentId === null ? 'New record' : 'Edit record'}</p>
+              <h2 id="student-form-title">{editingStudentId === null ? 'Add student details' : 'Update student details'}</h2>
             </div>
             <button className="close-form-button" type="button" onClick={() => setIsFormOpen(false)} aria-label="Close form">&times;</button>
           </div>
@@ -119,8 +151,8 @@ const StudentsDetails = () => {
             <label>Qualifications <span>(comma separated)</span><input name="qualifications" value={form.qualifications} onChange={handleChange} placeholder="BSc, MSc" required /></label>
             <label className="wide-field">Remarks<textarea name="remarks" value={form.remarks} onChange={handleChange} rows="3" /></label>
             <div className="form-actions">
-              <button className="cancel-button" type="button" onClick={() => setIsFormOpen(false)}>Cancel</button>
-              <button className="submit-button" type="submit" disabled={isSaving}>{isSaving ? 'Saving...' : 'Save student'}</button>
+              <button className="cancel-button" type="button" onClick={() => { setIsFormOpen(false); setEditingStudentId(null) }}>Cancel</button>
+              <button className="submit-button" type="submit" disabled={isSaving}>{isSaving ? 'Saving...' : editingStudentId === null ? 'Save student' : 'Update student'}</button>
             </div>
           </form>
         </section>
@@ -137,7 +169,7 @@ const StudentsDetails = () => {
       <div className="students-table-wrapper">
         {isLoading ? <p className="table-message">Loading student records...</p> : (
           <table className="students-table">
-            <thead><tr><th scope="col">Name</th><th scope="col">Date</th><th scope="col">Courses</th><th scope="col">Qualifications</th><th scope="col">Phone</th><th scope="col">Remarks</th></tr></thead>
+            <thead><tr><th scope="col">Name</th><th scope="col">Date</th><th scope="col">Courses</th><th scope="col">Qualifications</th><th scope="col">Phone</th><th scope="col">Remarks</th><th scope="col">Actions</th></tr></thead>
             <tbody>
               {visibleStudents.map((student) => (
                 <tr key={student.id}>
@@ -147,9 +179,13 @@ const StudentsDetails = () => {
                   <td data-label="Qualifications">{student.qualifications.join(', ')}</td>
                   <td data-label="Phone">{student.phone}</td>
                   <td data-label="Remarks">{student.remarks || '-'}</td>
+                  <td data-label="Actions" className="student-actions">
+                    <button type="button" onClick={() => handleEdit(student)}>Edit</button>
+                    <button type="button" onClick={() => handleDelete(student)}>Delete</button>
+                  </td>
                 </tr>
               ))}
-              {filteredStudents.length === 0 && <tr className="empty-results"><td colSpan="6">No students match your search.</td></tr>}
+              {filteredStudents.length === 0 && <tr className="empty-results"><td colSpan="7">No students match your search.</td></tr>}
             </tbody>
           </table>
         )}
