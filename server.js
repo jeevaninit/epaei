@@ -6,7 +6,9 @@ import { fileURLToPath } from 'node:url'
 import path from 'node:path'
 
 const scrypt = promisify(scryptCallback)
-const authFile = path.join(path.dirname(fileURLToPath(import.meta.url)), 'auth.json')
+const dataDirectory = path.dirname(fileURLToPath(import.meta.url))
+const authFile = path.join(dataDirectory, 'auth.json')
+const studentsFile = path.join(dataDirectory, 'students.json')
 const port = 4000
 
 const readUsers = async () => {
@@ -15,6 +17,13 @@ const readUsers = async () => {
 }
 
 const saveUsers = (users) => writeFile(authFile, `${JSON.stringify({ users }, null, 2)}\n`, 'utf8')
+
+const readStudents = async () => {
+  const data = JSON.parse(await readFile(studentsFile, 'utf8'))
+  return Array.isArray(data.students) ? data.students : []
+}
+
+const saveStudents = (students) => writeFile(studentsFile, `${JSON.stringify({ students }, null, 2)}\n`, 'utf8')
 
 const hashPassword = async (password, salt = randomBytes(16).toString('hex')) => {
   const derivedKey = await scrypt(password, salt, 64)
@@ -46,6 +55,84 @@ const readBody = (request) => new Promise((resolve, reject) => {
 const publicUser = (user) => ({ id: user.id, name: user.name, email: user.email })
 
 const server = createServer(async (request, response) => {
+  if (request.method === 'GET' && request.url === '/api/students') {
+    try {
+      sendJson(response, 200, { students: await readStudents() })
+    } catch (error) {
+      console.error(error)
+      sendJson(response, 500, { message: 'Student records could not be loaded.' })
+    }
+    return
+  }
+
+  const studentUrlMatch = request.url.match(/^\/api\/students\/(\d+)$/)
+  if (studentUrlMatch && ['PUT', 'DELETE'].includes(request.method)) {
+    try {
+      const studentId = Number(studentUrlMatch[1])
+      const students = await readStudents()
+      const studentIndex = students.findIndex((student) => student.id === studentId)
+
+      if (studentIndex === -1) {
+        sendJson(response, 404, { message: 'Student record could not be found.' })
+        return
+      }
+
+      if (request.method === 'DELETE') {
+        await saveStudents(students.filter((student) => student.id !== studentId))
+        sendJson(response, 200, { message: 'Student deleted successfully.' })
+        return
+      }
+
+      const body = await readBody(request)
+      const name = String(body.name || '').trim()
+      const date = String(body.date || '').trim()
+      const phone = String(body.phone || '').trim()
+      const remarks = String(body.remarks || '').trim()
+      const courses = String(body.courses || '').split(',').map((course) => course.trim()).filter(Boolean)
+      const qualifications = String(body.qualifications || '').split(',').map((qualification) => qualification.trim()).filter(Boolean)
+
+      if (!name || !date || !phone || courses.length === 0 || qualifications.length === 0) {
+        sendJson(response, 400, { message: 'Name, date, phone, courses, and qualifications are required.' })
+        return
+      }
+
+      const student = { id: studentId, date, name, courses, qualifications, phone, remarks }
+      students[studentIndex] = student
+      await saveStudents(students)
+      sendJson(response, 200, { student })
+    } catch (error) {
+      console.error(error)
+      sendJson(response, 500, { message: 'Student record could not be updated.' })
+    }
+    return
+  }
+
+  if (request.method === 'POST' && request.url === '/api/students') {
+    try {
+      const body = await readBody(request)
+      const name = String(body.name || '').trim()
+      const date = String(body.date || '').trim()
+      const phone = String(body.phone || '').trim()
+      const remarks = String(body.remarks || '').trim()
+      const courses = String(body.courses || '').split(',').map((course) => course.trim()).filter(Boolean)
+      const qualifications = String(body.qualifications || '').split(',').map((qualification) => qualification.trim()).filter(Boolean)
+
+      if (!name || !date || !phone || courses.length === 0 || qualifications.length === 0) {
+        sendJson(response, 400, { message: 'Name, date, phone, courses, and qualifications are required.' })
+        return
+      }
+
+      const students = await readStudents()
+      const student = { id: Date.now(), date, name, courses, qualifications, phone, remarks }
+      await saveStudents([...students, student])
+      sendJson(response, 201, { student })
+    } catch (error) {
+      console.error(error)
+      sendJson(response, 500, { message: 'Student record could not be saved.' })
+    }
+    return
+  }
+
   if (request.method !== 'POST' || !['/api/register', '/api/login'].includes(request.url)) {
     sendJson(response, 404, { message: 'Not found.' })
     return
